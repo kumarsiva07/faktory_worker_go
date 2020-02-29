@@ -39,6 +39,9 @@ type Context interface {
 
 	// allows direct access to the Faktory server from the job
 	With(func(*faktory.Client) error) error
+
+	// allows to set values in actual context
+	WithValue(key interface{}, value interface{})
 }
 
 // defaultContext embeds Go's standard context and associates it with a job ID.
@@ -76,6 +79,10 @@ func (c *defaultContext) TrackProgress(percent int, desc string, reserveUntil *t
 // Provides a Faktory server connection to the given func
 func (c *defaultContext) With(fn func(*faktory.Client) error) error {
 	return c.mgr.with(fn)
+}
+
+func (c *defaultContext) WithValue(key interface{}, value interface{}) {
+	c.Context = context.WithValue(c.Context, key, value)
 }
 
 var (
